@@ -4,6 +4,8 @@
 
 // www.medium.com/@0xsuzume
 // https://twitter.com/s_shitakiri
+// https://t.me/ShitaKiri_Suzume_SparrowsNest
+// https://suzume-blog.vercel.app/?s=03
 
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.9.0;
