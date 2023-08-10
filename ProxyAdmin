@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.6.0 <0.9.0;
+
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "./SuzumeUpgradableProxy.sol";
+
+contract ProxyAdmin is AccessControlUpgradeable {
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    address private _proxyAddress;
+
+    string public webAddress; // Add a public variable to store the web address
+
+    function initialize(address adminAddress) public initializer {
+        __AccessControl_init();
+        __Ownable_init();
+        _setupRole(ADMIN_ROLE, adminAddress);
+        _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE); // Make the admin role self-administered
+    }
+
+    function setProxyAddress(address proxyAddress) public {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
+        _proxyAddress = proxyAddress;
+    }
+
+    function getProxyAddress() public view returns (address) {
+        return _proxyAddress;
+    }
+
+    function upgradeTo(address newImplementation) public payable {
+        require(msg.sender == getProxyAdmin(), "Proxy: Caller is not the admin");
+        SuzumeUpgradableProxy proxy = SuzumeUpgradableProxy(_proxyAddress);
+        proxy.upgradeTo(newImplementation);
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
+        transferOwnership(newAdmin);
+    }
+
+    function getProxyAdmin() public view returns (address) {
+        SuzumeUpgradableProxy proxy = SuzumeUpgradableProxy(_proxyAddress);
+        return proxy.getProxyAdmin();
+    }
+
+    function transferProxyAdmin(address newAdmin) public {
+        SuzumeUpgradableProxy proxy = SuzumeUpgradableProxy(_proxyAddress);
+        proxy.transferProxyAdmin(newAdmin);
+    }
+
+    // Add the web address to the specified lines
+    // Line 4 - Open line
+    // Line 5 - Overwrite
+    // Line 6 - Overwrite
+    // Line 7 - Open line
+    function setWebAddress(string memory addressText) public {
+        webAddress = addressText;
+    }
+}
